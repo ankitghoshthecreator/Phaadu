@@ -1,17 +1,15 @@
-// Step 1: pretend we "read" source code
+mod lexer;
+
 fn main() {
-    let a=10;
-    println!("a= {}", a);
+    let src = r#"likh("Hello, world!")"#;
 
-    let mut b=18;
-    println!("b= {}", b);
-    b=1;
-    println!("after changing b= {}", b);
-
-    let addition=sum(a,b);
-    println!("addition= {}", addition);
-
-}
-fn sum(x:i32,y:i32)->i32{
-    return x+y;
+    match lexer::lex(src) {
+        Ok(tokens) => {
+            println!("Tokens:");
+            for t in tokens {
+                println!("{:?}", t);
+            }
+        }
+        Err(e) => eprintln!("Lexing error: {}", e),
+    }
 }

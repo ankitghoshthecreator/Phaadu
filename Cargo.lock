@@ -5,3 +5,12 @@ version = 4
 [[package]]
 name = "phaadu"
 version = "0.1.0"
+dependencies = [
+ "show",
+]
+
+[[package]]
+name = "show"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ad2f436e31659ef1b8e9830f06092fb31c2a403b8fd0569f50025647bd74b418"

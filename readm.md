@@ -95,3 +95,43 @@ LLVM emits → program.exe  (the user’s compiled program)
 Cargo uses Rust’s compiler (which already includes LLVM) to build my compiler as an .exe. 
 But my compiler still needs to use LLVM inside Rust to generate .exe files for programs written 
 in my new language
+
+# Lexer
+
+When you write code in your language:
+
+A = 3 * (B + 5)
+
+
+that’s just text — the compiler can’t directly understand it.
+
+The lexer’s job is to scan this text and break it into tokens:
+
+IDENT(A)
+EQUAL
+NUMBER(3)
+STAR
+LPAREN
+IDENT(B)
+PLUS
+NUMBER(5)
+RPAREN
+
+
+Every token has:
+
+a type (what kind of symbol it is)
+
+and often a value (the exact number, name, or symbol text)
+
+## Terminologies
+
+| Term                            | Meaning                                                               |
+| ------------------------------- | --------------------------------------------------------------------- |
+| **Lexeme**                      | The actual sequence of characters in the source (`A`, `3`, `*`, etc.) |
+| **Token**                       | The categorized result of a lexeme, e.g. `NUMBER(3)`                  |
+| **Tokenizer / Scanner / Lexer** | The component that groups characters into tokens                      |
+| **Regular expressions (regex)** | Rules or patterns that describe how to recognize tokens               |
+| **Whitespace / Comments**       | Usually ignored by the lexer, except when they separate tokens        |
+
+
