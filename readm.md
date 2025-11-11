@@ -52,4 +52,46 @@ Rust itself uses LLVM.
 Later, your language compiler (written in Rust) will use LLVM too, through crates like inkwell or llvm-sys.
 
 
+Your source code   →   Lexer   →   Parser   →   AST   →   IR
+                                                           |
+                                                           v
+                                                          LLVM
+                                                           |
+                                                           v 
+                                                 Machine Code (.exe)
 
+# What would make your program produce a real .exe
+
+## You would have to:
+
+Generate LLVM IR (a low-level intermediate code)
+
+Pass it to the LLVM backend
+
+Tell LLVM to “emit” (write) the machine code to disk
+
+Link all system libraries
+
+Save the result, e.g. program.exe (Windows) or program.out (Linux)
+
+Then you could double-click that .exe and run it — no Rust or Cargo needed.
+
+
+# Summary Diagram
+Step 1: You write Rust code for your compiler
+↓
+Cargo → rustc → LLVM
+↓
+YourCompiler.exe
+↓
+Step 2: Users write programs in your language
+↓
+YourCompiler.exe reads those files, builds AST, calls LLVM
+↓
+LLVM emits → program.exe  (the user’s compiled program)
+
+
+# NOTE
+Cargo uses Rust’s compiler (which already includes LLVM) to build my compiler as an .exe. 
+But my compiler still needs to use LLVM inside Rust to generate .exe files for programs written 
+in my new language

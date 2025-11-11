@@ -1,18 +1,17 @@
 // Step 1: pretend we "read" source code
 fn main() {
-    let source = "A = B * C + 5";
+    let a=10;
+    println!("a= {}", a);
 
-    // Step 2: our fake lexer just splits on spaces
-    let tokens: Vec<&str> = source.split_whitespace().collect();
-    println!("Tokens: {:?}", tokens);
+    let mut b=18;
+    println!("b= {}", b);
+    b=1;
+    println!("after changing b= {}", b);
 
-    // Step 3: fake "parser" prints a structure
-    println!("Parsed as: (Assign A (Add (Mul B C) 5))");
+    let addition=sum(a,b);
+    println!("addition= {}", addition);
 
-    // Step 4: pretend we "compiled" to assembly
-    println!("Assembly:");
-    println!("  mov r0, [B]");
-    println!("  mul r0, [C]");
-    println!("  add r0, 5");
-    println!("  mov [A], r0");
+}
+fn sum(x:i32,y:i32)->i32{
+    return x+y;
 }
