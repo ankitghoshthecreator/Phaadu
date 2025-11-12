@@ -135,3 +135,13 @@ and often a value (the exact number, name, or symbol text)
 | **Whitespace / Comments**       | Usually ignored by the lexer, except when they separate tokens        |
 
 
+## What is a Parser?
+Think of it as the stage that converts a flat list of tokens into a hierarchical structure that expresses what’s happening.
+for example
+KeywordLikh, LParen, StringLiteral("Hello"), RParen
+to
+CallExpression
+├── callee: "likh"
+└── argument: "Hello"
+
+

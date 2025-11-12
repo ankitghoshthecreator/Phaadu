@@ -1,15 +1,23 @@
 mod lexer;
+mod parser;
 
 fn main() {
-    let src = r#"likh("Hello, world!")"#;
+    let src = r#"likh("Hello, parser!")"#;
 
-    match lexer::lex(src) {
-        Ok(tokens) => {
-            println!("Tokens:");
-            for t in tokens {
-                println!("{:?}", t);
-            }
+    // 1. tokenize
+    let tokens = match lexer::lex(src) {
+        Ok(t) => t,
+        Err(e) => {
+            eprintln!("Lexing error: {}", e);
+            return;
         }
-        Err(e) => eprintln!("Lexing error: {}", e),
+    };
+
+    println!("Tokens: {:?}", tokens);
+
+    // 2. parse
+    match parser::parse(&tokens) {
+        Ok(ast) => println!("AST: {:?}", ast),
+        Err(e) => eprintln!("Parse error: {}", e),
     }
 }
