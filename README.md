@@ -179,14 +179,16 @@ cargo run -- src/main.rs
 
 ## 📌 Project Status & Roadmap
 
-- [x] Basic Lexer implementation (`src/lexer.rs`)
+- [x] **Part 1: `phaadu-lexer` — Lexer & Tokenizer** (Full token set, line/col tracking, matrix `@` / `^` / `'` ops, comments, escape sequences)
 - [x] Basic AST & Parser (`src/parser.rs`)
 - [x] Initial Runtime prototype (`src/runtime.rs`)
-- [ ] Matrix & Tensor data structure implementations
-- [ ] Reverse-mode Autodiff engine (`phaadu-autodiff`)
-- [ ] Self & Cross Attention optimized kernels (`phaadu-kernels`)
-- [ ] LLVM IR codegen integration (`inkwell` / `llvm-sys`)
-- [ ] Integrated Plotting/Visualization window engine (`phaadu-viz`)
+- [ ] Part 2: `phaadu-parser` — AST & Parser
+- [ ] Part 3: `phaadu-analyzer` — Semantic Analyzer & Tensor Shape Engine
+- [ ] Part 4: `phaadu-autodiff` — Reverse-Mode Autodiff Engine
+- [ ] Part 5: `phaadu-kernels` — Self & Cross Attention Optimized Kernels
+- [ ] Part 6: `phaadu-codegen` — LLVM IR Codegen Engine
+- [ ] Part 7: `phaadu-runtime` — Zero-Cost Runtime & Memory Manager
+- [ ] Part 8: `phaadu-viz` — Integrated Plotting/Visualization Engine
 
 ---
 
