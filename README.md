@@ -156,23 +156,32 @@ viz::heatmap(C, cmap="viridis", annotate=true);
 
 ---
 
+## 📁 File Extensions
+
+Phaadu source files use the following officially recognized extensions:
+- **`.pha`** *(Recommended Standard)* — e.g., `main.pha`
+- **`.phaadu`** *(Full Extension)* — e.g., `model.phaadu`
+- **`.ph`** *(Short Extension)* — e.g., `script.ph`
+
+---
+
 ## 🚀 Quick Start & Development
 
 ### Prerequisites
 - [Rust](https://www.rust-lang.org/) (MSRV 1.75+)
 - [LLVM](https://llvm.org/) (v16 or higher)
 
-### Building the Compiler
+### Building & Running the Compiler
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/phaadu.git
-cd phaadu
+git clone https://github.com/ankitghoshthecreator/Phaadu.git
+cd Phaadu
 
 # Build using Cargo
 cargo build --release
 
-# Run the Phaadu compiler on a source file
-cargo run -- src/main.rs
+# Run the Phaadu compiler on a source file (.pha / .phaadu / .ph)
+cargo run -- main.pha
 ```
 
 ---
