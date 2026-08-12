@@ -180,9 +180,8 @@ cargo run -- src/main.rs
 ## 📌 Project Status & Roadmap
 
 - [x] **Part 1: `phaadu-lexer` — Lexer & Tokenizer** (Full token set, line/col tracking, matrix `@` / `^` / `'` ops, comments, escape sequences)
-- [x] Basic AST & Parser (`src/parser.rs`)
+- [x] **Part 2: `phaadu-parser` — Parser & Abstract Syntax Tree (AST)** (Pratt expression precedence, matrix algebra, autodiff statements, attention blocks, control flow, functions)
 - [x] Initial Runtime prototype (`src/runtime.rs`)
-- [ ] Part 2: `phaadu-parser` — AST & Parser
 - [ ] Part 3: `phaadu-analyzer` — Semantic Analyzer & Tensor Shape Engine
 - [ ] Part 4: `phaadu-autodiff` — Reverse-Mode Autodiff Engine
 - [ ] Part 5: `phaadu-kernels` — Self & Cross Attention Optimized Kernels
