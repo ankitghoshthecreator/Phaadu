@@ -1,11 +1,8 @@
-use crate::parser::AstNode;
+use crate::parser::Program;
 
-/// Interpret and execute an AST node.
-pub fn run(ast: &AstNode) -> Result<(), String> {
-    match ast {
-        AstNode::PrintCall(text) => {
-            println!("{}", text);
-            Ok(())
-        }
-    }
+/// Interpret and execute a Phaadu AST Program.
+pub fn run(program: &Program) -> Result<(), String> {
+    // Placeholder runtime prototype aligned with Part 2/3 AST structures
+    println!("⚡ Executing Phaadu program...");
+    Ok(())
 }
