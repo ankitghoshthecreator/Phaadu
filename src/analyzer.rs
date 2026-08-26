@@ -718,6 +718,7 @@ mod tests {
     use crate::lexer::lex;
     use crate::parser::parse;
 
+    // Test 1: Valid variable declaration, reassignment, and arithmetic
     #[test]
     fn test_valid_variable_declaration_and_assignment() {
         let src = r#"
@@ -731,6 +732,7 @@ mod tests {
         assert!(result.is_ok(), "Expected valid semantic analysis: {:?}", result);
     }
 
+    // Test 2: Assignment to immutable variable returns error
     #[test]
     fn test_invalid_assignment_to_immutable() {
         let src = r#"
@@ -744,6 +746,7 @@ mod tests {
         assert!(result.unwrap_err().contains("Cannot assign to immutable variable"));
     }
 
+    // Test 3: Referencing undefined variables returns error
     #[test]
     fn test_undefined_variable() {
         let src = r#"
@@ -756,6 +759,74 @@ mod tests {
         assert!(result.unwrap_err().contains("Undefined variable 'x'"));
     }
 
+    // Test 4: Dynamic variable shadowing in inner blocks
+    #[test]
+    fn test_block_scope_shadowing() {
+        let src = r#"
+            let x: f64 = 1.0;
+            if true {
+                let x: bool = false;
+                let y: bool = x;
+            }
+            let z: f64 = x;
+        "#;
+        let tokens = lex(src).unwrap();
+        let program = parse(&tokens).unwrap();
+        assert!(analyze(&program).is_ok());
+    }
+
+    // Test 5: Re-declaring variables in the same scope returns error
+    #[test]
+    fn test_variable_redeclared_in_same_scope() {
+        let src = r#"
+            let x: f64 = 1.0;
+            let x: bool = false;
+        "#;
+        let tokens = lex(src).unwrap();
+        let program = parse(&tokens).unwrap();
+        let result = analyze(&program);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("already declared in this scope"));
+    }
+
+    // Test 6: Valid matrix literal parsing and row dimensions check
+    #[test]
+    fn test_matrix_literal_shapes_valid() {
+        let src = r#"
+            let A: Matrix[2, 3] = [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]];
+        "#;
+        let tokens = lex(src).unwrap();
+        let program = parse(&tokens).unwrap();
+        assert!(analyze(&program).is_ok());
+    }
+
+    // Test 7: Inconsistent row lengths in matrix literals returns error
+    #[test]
+    fn test_matrix_literal_inconsistent_cols() {
+        let src = r#"
+            let A = [[1.0, 2.0], [3.0, 4.0, 5.0]];
+        "#;
+        let tokens = lex(src).unwrap();
+        let program = parse(&tokens).unwrap();
+        let result = analyze(&program);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("Inconsistent matrix literal shape"));
+    }
+
+    // Test 8: Non-numeric elements in matrix literal returns error
+    #[test]
+    fn test_matrix_literal_non_numeric() {
+        let src = r#"
+            let A = [[1.0, true], [3.0, 4.0]];
+        "#;
+        let tokens = lex(src).unwrap();
+        let program = parse(&tokens).unwrap();
+        let result = analyze(&program);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("Matrix literal elements must be F64"));
+    }
+
+    // Test 9: Valid Matrix Multiplication shape checking & inference
     #[test]
     fn test_matrix_multiplication_shapes_valid() {
         let src = r#"
@@ -768,11 +839,11 @@ mod tests {
         let mut analyzer = Analyzer::new();
         assert!(analyzer.analyze_program(&program).is_ok());
 
-        // Check C's inferred shape: Matrix[2, 2]
         let c_info = analyzer.symbol_table.lookup("C").unwrap();
         assert_eq!(c_info.type_kind, TypeKind::Matrix { rows: Some(2), cols: Some(2) });
     }
 
+    // Test 10: Incompatible Matrix Multiplication inner dimensions returns error
     #[test]
     fn test_matrix_multiplication_shapes_invalid() {
         let src = r#"
@@ -787,6 +858,7 @@ mod tests {
         assert!(result.unwrap_err().contains("inner dimensions must match"));
     }
 
+    // Test 11: Postfix transpose swaps dimensions correctly
     #[test]
     fn test_matrix_transpose() {
         let src = r#"
@@ -802,6 +874,48 @@ mod tests {
         assert_eq!(c_info.type_kind, TypeKind::Matrix { rows: Some(3), cols: Some(2) });
     }
 
+    // Test 12: Element-wise arithmetic between matrices of compatible shapes
+    #[test]
+    fn test_matrix_elementwise_add_valid() {
+        let src = r#"
+            let A: Matrix[2, 2] = [[1.0, 2.0], [3.0, 4.0]];
+            let B: Matrix[2, 2] = [[5.0, 6.0], [7.0, 8.0]];
+            let C = A + B;
+        "#;
+        let tokens = lex(src).unwrap();
+        let program = parse(&tokens).unwrap();
+        assert!(analyze(&program).is_ok());
+    }
+
+    // Test 13: Element-wise matrix arithmetic of mismatched shapes returns error
+    #[test]
+    fn test_matrix_elementwise_add_invalid() {
+        let src = r#"
+            let A: Matrix[2, 2] = [[1.0, 2.0], [3.0, 4.0]];
+            let B: Matrix[2, 3] = [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]];
+            let C = A + B;
+        "#;
+        let tokens = lex(src).unwrap();
+        let program = parse(&tokens).unwrap();
+        let result = analyze(&program);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("Shape mismatch in addition/subtraction"));
+    }
+
+    // Test 14: Scalar-to-Matrix broadcasting elementwise operations
+    #[test]
+    fn test_scalar_matrix_broadcasting() {
+        let src = r#"
+            let A: Matrix[2, 2] = [[1.0, 2.0], [3.0, 4.0]];
+            let B = A * 5.0;
+            let C = 10.0 + A;
+        "#;
+        let tokens = lex(src).unwrap();
+        let program = parse(&tokens).unwrap();
+        assert!(analyze(&program).is_ok());
+    }
+
+    // Test 15: Valid Self-Attention shapes validation
     #[test]
     fn test_attention_shapes_valid() {
         let src = r#"
@@ -815,4 +929,103 @@ mod tests {
         let result = analyze(&program);
         assert!(result.is_ok(), "Expected valid attention shapes: {:?}", result);
     }
+
+    // Test 16: Mismatched dimensions (embedding sizes) in Self-Attention returns error
+    #[test]
+    fn test_attention_shapes_invalid_dim() {
+        let src = r#"
+            let Q: Tensor[1, 8, 64] = randn();
+            let K: Tensor[1, 8, 128] = randn();
+            let V: Tensor[1, 8, 64] = randn();
+            let attn_out = attn::self_attention(Q, K, V);
+        "#;
+        let tokens = lex(src).unwrap();
+        let program = parse(&tokens).unwrap();
+        let result = analyze(&program);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("key dimensions (Dim) must match"));
+    }
+
+    // Test 17: Sequence length mismatch in Self-Attention returns error
+    #[test]
+    fn test_attention_shapes_invalid_seq() {
+        let src = r#"
+            let Q: Tensor[1, 8, 64] = randn();
+            let K: Tensor[1, 16, 64] = randn();
+            let V: Tensor[1, 8, 64] = randn();
+            let attn_out = attn::self_attention(Q, K, V);
+        "#;
+        let tokens = lex(src).unwrap();
+        let program = parse(&tokens).unwrap();
+        let result = analyze(&program);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("sequence lengths must match"));
+    }
+
+    // Test 18: Valid Cross-Attention shapes validation
+    #[test]
+    fn test_cross_attention_shapes_valid() {
+        let src = r#"
+            let Q: Tensor[1, 8, 64] = randn();
+            let K: Tensor[1, 16, 64] = randn();
+            let V: Tensor[1, 16, 64] = randn();
+            let cross_out = attn::cross_attention(Q, K, V);
+        "#;
+        let tokens = lex(src).unwrap();
+        let program = parse(&tokens).unwrap();
+        assert!(analyze(&program).is_ok());
+    }
+
+    // Test 19: Unary negation (-) and not (!) operator rules
+    #[test]
+    fn test_unary_operations() {
+        let src = r#"
+            let a: f64 = -10.0;
+            let b: bool = !true;
+        "#;
+        let tokens = lex(src).unwrap();
+        let program = parse(&tokens).unwrap();
+        assert!(analyze(&program).is_ok());
+    }
+
+    // Test 20: Applying logical Not (!) to F64 returns error
+    #[test]
+    fn test_unary_not_invalid_type() {
+        let src = r#"
+            let a = !10.0;
+        "#;
+        let tokens = lex(src).unwrap();
+        let program = parse(&tokens).unwrap();
+        let result = analyze(&program);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("Cannot apply logical not"));
+    }
+
+    // Test 21: Compound assignment operations and shape preservation
+    #[test]
+    fn test_compound_assignments() {
+        let src = r#"
+            let mut A: Matrix[2, 2] = [[1.0, 2.0], [3.0, 4.0]];
+            let B: Matrix[2, 2] = [[5.0, 6.0], [7.0, 8.0]];
+            A += B;
+        "#;
+        let tokens = lex(src).unwrap();
+        let program = parse(&tokens).unwrap();
+        assert!(analyze(&program).is_ok());
+    }
+
+    // Test 22: Scoped function definition and argument type checks
+    #[test]
+    fn test_function_decl_and_call_type_checking() {
+        let src = r#"
+            fn add_nums(a: f64, b: f64) -> f64 {
+                let sum = a + b;
+            }
+            let res = add_nums(10.0, 20.0);
+        "#;
+        let tokens = lex(src).unwrap();
+        let program = parse(&tokens).unwrap();
+        assert!(analyze(&program).is_ok());
+    }
 }
+
