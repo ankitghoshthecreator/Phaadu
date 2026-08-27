@@ -125,7 +125,6 @@ viz::heatmap(C, cmap="viridis", annotate=true);
 ---
 
 ## ⚙️ Compilation Pipeline
-
 ```
  Source Code (.pha)
         │
