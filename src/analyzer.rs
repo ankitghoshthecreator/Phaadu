@@ -418,6 +418,9 @@ impl Analyzer {
                 }
                 Ok(TypeKind::Tensor { dimensions: vec![0] })
             }
+            Expr::NamedArg { name: _, value } => {
+                self.check_expr(value, expected_type)
+            }
         }
     }
 

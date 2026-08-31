@@ -69,6 +69,10 @@ pub enum Expr {
         start: Box<Expr>,
         end: Box<Expr>,
     },
+    NamedArg {
+        name: String,
+        value: Box<Expr>,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -178,8 +182,33 @@ impl<'a> Parser<'a> {
         self.tokens.get(self.current).map(|t| &t.kind).unwrap_or(&TokenKind::Eof)
     }
 
+    fn peek_next(&self) -> &TokenKind {
+        self.tokens.get(self.current + 1).map(|t| &t.kind).unwrap_or(&TokenKind::Eof)
+    }
+
     fn peek_token(&self) -> &Token {
         &self.tokens[self.current.min(self.tokens.len() - 1)]
+    }
+
+    fn parse_argument(&mut self) -> Result<Expr, String> {
+        if (matches!(self.peek(), TokenKind::Ident(_)) || matches!(self.peek(), TokenKind::KeywordRequiresGrad))
+            && self.peek_next() == &TokenKind::Equal
+        {
+            let name_token = self.advance().clone();
+            let name = match name_token.kind {
+                TokenKind::Ident(s) => s,
+                TokenKind::KeywordRequiresGrad => "requires_grad".to_string(),
+                _ => unreachable!(),
+            };
+            self.expect(&TokenKind::Equal)?;
+            let value = self.parse_expression(Precedence::Lowest)?;
+            Ok(Expr::NamedArg {
+                name,
+                value: Box::new(value),
+            })
+        } else {
+            self.parse_expression(Precedence::Lowest)
+        }
     }
 
     fn advance(&mut self) -> &Token {
@@ -649,7 +678,7 @@ impl<'a> Parser<'a> {
                     let mut args = Vec::new();
                     if self.peek() != &TokenKind::RParen {
                         loop {
-                            args.push(self.parse_expression(Precedence::Lowest)?);
+                            args.push(self.parse_argument()?);
                             if self.peek() == &TokenKind::Comma {
                                 self.advance();
                             } else {
@@ -687,7 +716,7 @@ impl<'a> Parser<'a> {
                 let mut args = Vec::new();
                 if self.peek() != &TokenKind::RParen {
                     loop {
-                        args.push(self.parse_expression(Precedence::Lowest)?);
+                        args.push(self.parse_argument()?);
                         if self.peek() == &TokenKind::Comma {
                             self.advance();
                         } else {
@@ -707,7 +736,7 @@ impl<'a> Parser<'a> {
                 let mut args = Vec::new();
                 if self.peek() != &TokenKind::RParen {
                     loop {
-                        args.push(self.parse_expression(Precedence::Lowest)?);
+                        args.push(self.parse_argument()?);
                         if self.peek() == &TokenKind::Comma {
                             self.advance();
                         } else {

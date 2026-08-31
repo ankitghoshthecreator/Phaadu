@@ -190,8 +190,8 @@ cargo run -- main.pha
 - [x] **Part 1: `phaadu-lexer` — Lexer & Tokenizer** (Full token set, line/col tracking, matrix `@` / `^` / `'` ops, comments, escape sequences)
 - [x] **Part 2: `phaadu-parser` — Parser & Abstract Syntax Tree (AST)** (Pratt expression precedence, matrix algebra, autodiff statements, attention blocks, control flow, functions)
 - [x] Initial Runtime prototype (`src/runtime.rs`)
-- [ ] Part 3: `phaadu-analyzer` — Semantic Analyzer & Tensor Shape Engine
-- [ ] Part 4: `phaadu-autodiff` — Reverse-Mode Autodiff Engine
+- [x] **Part 3: `phaadu-analyzer` — Semantic Analyzer & Tensor Shape Engine** (Type checking, shape inference, scopes)
+- [x] **Part 4: `phaadu-autodiff` — Reverse-Mode Autodiff Engine** (Static reverse-mode automatic differentiation compiler pass, AST-to-AST translation)
 - [ ] Part 5: `phaadu-kernels` — Self & Cross Attention Optimized Kernels
 - [ ] Part 6: `phaadu-codegen` — LLVM IR Codegen Engine
 - [ ] Part 7: `phaadu-runtime` — Zero-Cost Runtime & Memory Manager

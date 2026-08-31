@@ -1,6 +1,7 @@
 mod lexer;
 mod parser;
 mod analyzer;
+mod autodiff;
 mod runtime;
 
 fn main() {
@@ -51,6 +52,18 @@ fn main() {
         }
         Err(e) => {
             eprintln!("❌ Semantic analysis error: {}", e);
+            return;
+        }
+    }
+
+    // 4. Automatic Differentiation (Part 4: phaadu-autodiff)
+    match autodiff::generate_backward(&program) {
+        Ok(backward_program) => {
+            println!("✅ [Part 4: Autodiff] Static reverse-mode automatic differentiation successful!");
+            println!("Generated backward pass statements: {} total statements.", backward_program.statements.len());
+        }
+        Err(e) => {
+            eprintln!("❌ Autodiff error: {}", e);
         }
     }
 }
